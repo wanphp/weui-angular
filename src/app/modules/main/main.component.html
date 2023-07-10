@@ -1,0 +1,35 @@
+<div class="weui-tab">
+  <div class="weui-tab__panel">
+    <router-outlet></router-outlet>
+  </div>
+  <div class="weui-tabbar">
+    <div class="weui-tabbar__item" *ngFor="let item of navbar" [ngClass]="{ 'weui-bar__item_on': item.active }" (click)="onSelectNavbar(item)">
+      <div style="position: relative; display: inline-block;">
+        <div class="weui-tabbar__icon"><i [class]="item.icon"></i></div>
+        <span class="weui-badge" style="position: absolute; top: -2px; right: -13px;"
+              *ngIf="item.badge && item.badge !== 'dot'">{{ item.badge }}</span>
+        <span class="weui-badge weui-badge_dot" style="position: absolute; top: 0; right: -6px;" *ngIf="item.badge && item.badge === 'dot'"></span>
+      </div>
+      <p class="weui-tabbar__label">{{ item.title }}</p>
+    </div>
+    <div class="weui-tabbar__item" (click)="popupMenu.show()">
+      <div style="position: relative; display: inline-block;">
+        <div class="weui-tabbar__icon"><i class="fa-solid fa-ellipsis"></i></div>
+      </div>
+      <p class="weui-tabbar__label">更多</p>
+    </div>
+  </div>
+  <app-popup #popup [config]="{is_head:false}">
+    <div class="weui-grids">
+      <a class="weui-grid" *ngFor="let item of navbarMore" [ngClass]="{ 'weui-grid_on': item.active }" (click)="onSelectNavbarMore(item)">
+        <div class="weui-grid__icon" style="position: relative">
+          <i class="{{ item.icon }}"></i>
+          <span class="weui-badge" style="position: absolute; top: -2px; right: -13px;"
+                *ngIf="item.badge && item.badge !== 'dot'">{{ item.badge }}</span>
+          <span class="weui-badge weui-badge_dot" style="position: absolute; top: 0; right: -6px;" *ngIf="item.badge && item.badge === 'dot'"></span>
+        </div>
+        <p class="weui-grid__label">{{ item.title }}</p>
+      </a>
+    </div>
+  </app-popup>
+</div>

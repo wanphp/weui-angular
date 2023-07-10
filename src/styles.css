@@ -1,0 +1,24 @@
+/* You can add global styles to this file, and also import other style files */
+@import "~weui/dist/style/weui.min.css";
+@import "~@fortawesome/fontawesome-free/css/all.min.css";
+
+html,
+body,
+app-root,
+app-main {
+  display: block;
+  height: 100%;
+}
+
+body {
+  background-color: var(--weui-BG-0);
+}
+
+.weui-grid__icon > i {
+  font-size: 28px;
+  color: var(--weui-FG-1);
+}
+
+.weui-grids .weui-grid_on .weui-grid__icon > i, .weui-grids .weui-grid_on .weui-grid__label {
+  color: var(--weui-BRAND);
+}

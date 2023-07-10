@@ -1,0 +1,25 @@
+.weui-dialog .weui-mask,
+.weui-dialog .weui-dialog {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.weui-dialog .weui-mask__in,
+.weui-dialog .weui-dialog__in {
+  visibility: visible;
+  opacity: 1;
+}
+
+.weui-dialog .weui-mask {
+  transition-duration: 0.3s;
+}
+
+.weui-dialog .weui-dialog {
+  transform-origin: 0 0;
+  transition-duration: 0.2s;
+}
+
+.weui-dialog .weui-dialog__error {
+  color: #f50;
+  font-size: 14px;
+}

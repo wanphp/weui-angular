@@ -1,0 +1,46 @@
+import {Navbar} from "@/store/ui/navbar";
+
+export default <UiState>{
+  theme: localStorage.getItem('theme'),
+  navbar: [{
+    active: false,
+    icon: 'fas fa-home',
+    title: '首页',
+    badge: '',
+    link: '/'
+  },
+    {
+      active: false,
+      icon: 'fa-solid fa-address-card',
+      title: '联系',
+      badge: 10,
+      link: '/profile'
+    }],
+  navbarMore: [{
+    active: false,
+    icon: 'fas fa-home',
+    title: '首页',
+    badge: '',
+    link: '/'
+  },
+    {
+      active: false,
+      icon: 'fa-solid fa-address-card',
+      title: '联系',
+      badge: 'dot',
+      link: '/profile'
+    },
+    {
+      active: false,
+      icon: 'fa-solid fa-circle-half-stroke',
+      title: '主题',
+      badge: '',
+      link: ''
+    }]
+};
+
+export interface UiState {
+  theme: string;
+  navbar: Navbar[];
+  navbarMore: Navbar[];
+}

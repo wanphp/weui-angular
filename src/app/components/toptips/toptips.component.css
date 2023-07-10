@@ -1,0 +1,12 @@
+.weui-toptips__default {
+  background-color: #b2b2b2;
+}
+.weui-toptips__warn {
+  background-color: #f50;
+}
+.weui-toptips__info {
+  background-color: #586c94;
+}
+.weui-toptips__primary {
+  background-color: #1AAD19;
+}

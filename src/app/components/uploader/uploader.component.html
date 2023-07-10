@@ -1,0 +1,46 @@
+<div class="weui-cells weui-cells_form">
+  <div class="weui-cell">
+    <div class="weui-cell__bd">
+      <div class="weui-uploader">
+        <div class="weui-uploader__hd">
+          <p class="weui-uploader__title">{{title}}</p>
+          <div class="weui-uploader__info">{{ uploader.uploadedCount }}/{{ uploader.queue.length }}</div>
+        </div>
+        <div class="weui-uploader__bd">
+          <ul class="weui-uploader__files">
+            <li class="weui-uploader__file" *ngFor="let item of uploader.queue" style="background-image:url({{item.thumb}})"
+                (click)="onGallery(item)" [ngClass]="{ 'weui-uploader__file_status': item.isError||item.isUploading }"
+                [style.background-size]="item.fileMimeClass!=='image'?'70% 70%':''"
+                [style.background-color]="item.fileMimeClass!=='image'?'#ededed':''">
+              <div class="weui-uploader__file-content" *ngIf="item.isUploading">{{ item.progress }}%</div>
+              <div class="weui-uploader__file-content" *ngIf="item.isError">
+                <i class="weui-icon-warn"></i>
+              </div>
+            </li>
+          </ul>
+          <div class="weui-uploader__input-box">
+            <input *ngIf="!isWxBrowserSelectImage()" class="weui-uploader__input" type="file" accept="{{acceptType}}" multiple
+                   (change)="change($event)">
+            <button *ngIf="isWxBrowserSelectImage()" class="weui-uploader__input" (click)="selectImage()"></button>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="viewFile" [style.display]="imgShow ? 'block' : 'none'" class="weui-gallery" (click)="hideGallery($event)">
+        <span class="weui-gallery__img" style="background-image: url('{{viewFile.thumb}}');display: flex; align-items: center;"
+              [style.background-size]="!['image','video','audio'].includes(viewFile.fileMimeClass)?'70% 70%':''"
+              [style.background-color]="!['image','video','audio'].includes(viewFile.fileMimeClass)?'white':''">
+          <video #media *ngIf="['video','audio'].includes(viewFile.fileMimeClass)" src="{{viewFile.uploadedFile}}" controls width="100%"
+                 [style.height]="viewFile.fileMimeClass=='audio'?'50px':''"></video>
+        </span>
+        <div class="weui-gallery__opr">
+          <span role="button" aria-label="删除" (click)="onDel(viewFile)" class="weui-gallery__del">
+            <i class="weui-icon-delete weui-icon_gallery-delete"></i>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="weui-btn-area">
+  <button class="weui-btn weui-btn_primary" (click)="uploader.uploadAll()" [disabled]="uploader.isUploading">上传</button>
+</div>

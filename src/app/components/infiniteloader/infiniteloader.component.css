@@ -1,0 +1,11 @@
+.weui-infiniteloader {
+  display: block;
+  overflow: hidden;
+}
+
+.weui-infiniteloader__content {
+  z-index: 1;
+  height: 100%;
+  overflow: scroll;
+  -webkit-overflow-scrolling: touch;
+}

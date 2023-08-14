@@ -18,8 +18,9 @@
               </div>
             </li>
           </ul>
-          <div class="weui-uploader__input-box">
-            <input *ngIf="!isWxBrowserSelectImage()" class="weui-uploader__input" type="file" accept="{{acceptType}}" multiple
+          <div class="weui-uploader__input-box" *ngIf="uploader.queue.length<uploader.options.limit">
+            <input *ngIf="!isWxBrowserSelectImage()" class="weui-uploader__input" type="file" accept="{{acceptType}}"
+                   [multiple]="uploader.options.limit!=1"
                    (change)="change($event)">
             <button *ngIf="isWxBrowserSelectImage()" class="weui-uploader__input" (click)="selectImage()"></button>
           </div>
@@ -41,6 +42,6 @@
     </div>
   </div>
 </div>
-<div class="weui-btn-area">
+<div class="weui-btn-area" *ngIf="!uploader.options.auto">
   <button class="weui-btn weui-btn_primary" (click)="uploader.uploadAll()" [disabled]="uploader.isUploading">上传</button>
 </div>

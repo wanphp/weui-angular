@@ -14,7 +14,7 @@ export class ProfileComponent {
     this.uploadConfig = {
       url: 'string',
       headers: {},
-      autoUpload: false,
+      auto: false,
       mimes: ['image', 'video','audio'],
       limit: -1,
       size: 1024 * 1024 * 100

@@ -128,7 +128,7 @@ export class Uploader {
    * @param files 文件列表
    * @param options 强制重新指定新 `options` 内容
    */
-  addToQueue(files: File[] | any[], options?: UploaderOptions): void {
+  addToQueue(files: File[] | { url: string; id: number; }[], options?: UploaderOptions): void {
     const count = this._queue.length;
     if (!options) {
       options = this._options;
@@ -149,7 +149,7 @@ export class Uploader {
         }
       } else {
         // 显示已上传到服务器的文件
-        const fileItem = new FileItem(this, file.url);
+        const fileItem = new FileItem(this, file.url, options!);
         fileItem._onSuccess(file, 0, {});//标记为已上传
         this._queue.push(fileItem);
         if (this._options.onFileQueued) {
@@ -305,7 +305,7 @@ export class Uploader {
     };
     xhr.open('POST', item.options!.url!, true);
     xhr.responseType = 'json';
-    Object.keys(this._options.headers || {}).forEach((key: string) => sendAble.append(key, this._options.headers![key]));
+    Object.keys(this._options.headers || {}).forEach((key: string) => xhr.setRequestHeader(key, this._options.headers![key]));
     xhr.send(sendAble);
     return this;
   }

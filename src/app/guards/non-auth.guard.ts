@@ -17,7 +17,7 @@ export class NonAuthGuard {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    if (!localStorage.getItem('token')) {
+    if (!localStorage.getItem('access_token')) {
       return true;
     }
     this.router.navigate(['/']);

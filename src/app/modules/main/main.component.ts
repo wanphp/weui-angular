@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, Renderer2, ViewChild, ViewContainerRef, ViewEncapsulation} from '@angular/core';
+import {Component, OnInit, Renderer2, ViewChild, ViewEncapsulation} from '@angular/core';
 import {Observable} from "rxjs";
 import {UiState} from "@/store/ui/state";
 import {Navbar} from "@/store/ui/navbar";
@@ -8,8 +8,6 @@ import {PopupComponent} from "@components/popup/popup.component";
 import {SetNavbar, SetNavbarMore, SetTheme} from "@/store/ui/actions";
 import {Router} from "@angular/router";
 import {DialogService} from "@components/dialog/dialog.service";
-import {ToastService} from "@components/toast/toast.service";
-import {ToptipsService} from "@components/toptips/toptips.service";
 
 @Component({
   selector: 'app-main',
@@ -18,7 +16,7 @@ import {ToptipsService} from "@components/toptips/toptips.service";
   encapsulation: ViewEncapsulation.None
 })
 export class MainComponent implements OnInit {
-  public ui: Observable<UiState> = new Observable<UiState>();
+  public ui!: Observable<UiState>;
   public navbar!: Navbar[];
   public navbarMore!: Navbar[];
 
@@ -28,17 +26,8 @@ export class MainComponent implements OnInit {
     private renderer: Renderer2,
     private store: Store<AppState>,
     private router: Router,
-    private toastService:ToptipsService,
-    private dialogService: DialogService,
-    private viewContainerRef: ViewContainerRef,
-    private el: ElementRef
+    private dialogService: DialogService
   ) {
-    this.dialogService.viewContainerRef = viewContainerRef;
-    this.dialogService.el = el;
-
-    this.toastService.viewContainerRef = viewContainerRef;
-    this.toastService.el = el;
-    this.toastService.info('成功')
   }
 
   ngOnInit(): void {
@@ -46,7 +35,7 @@ export class MainComponent implements OnInit {
     this.ui.subscribe(({theme, navbar, navbarMore}) => {
       this.navbar = navbar;
       this.navbarMore = navbarMore;
-      this.renderer.setAttribute(document.querySelector('body'), 'data-weui-theme', theme);
+      this.renderer.setAttribute(document.querySelector('body'), 'data-weui-theme', theme ?? '');
     });
   }
 

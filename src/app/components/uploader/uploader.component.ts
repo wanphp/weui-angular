@@ -1,15 +1,17 @@
-import {Component, ElementRef, EventEmitter, Input, Output, Renderer2, RendererFactory2, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, NgZone, Output, Renderer2, RendererFactory2, ViewChild} from '@angular/core';
 import {Uploader} from "@components/uploader/uploader.class";
 import {UploaderOptions} from "@components/uploader/uploader.options";
 import {FileItem} from "@components/uploader/file-item.class";
 import {FileType} from "@components/uploader/file-type.class";
-import {WxService} from "@services/wx.service";
+import {ApiService} from "@services/api.service";
+import {Store} from "@ngrx/store";
+import {AppState} from "@/store/state";
 
 export interface UploaderConfig {
   url: string;
   params?: { [key: string]: any };
-  headers?: string[];
-  autoUpload?: boolean;
+  headers?: { [key: string]: string };
+  auto?: boolean;
   /**
    * 限定文件mime类型，例如：[ 'image','video' ]
    */
@@ -38,18 +40,20 @@ export interface UploaderConfig {
 export class UploaderComponent {
   private readonly render: Renderer2;
   private wx: any;
-  private onlyImage: boolean = false;
+  private onlyImage: boolean = false;// 只上传图片时
+  private limit = 1; // 微信内最多选择9张图片
   uploader!: Uploader;
   acceptType = '';
   @ViewChild('media') media!: ElementRef;
 
   @Input() title: string = '';
-  @Input() files: any;
+  @Input() files: { url: string; id: number; }[] = [];
   @Output() filesChange = new EventEmitter();
 
   @Input()
   set config(config: UploaderConfig) {
     this.onlyImage = (config.mimes?.includes('image') && config.mimes?.length === 1) as boolean;
+    this.limit = config.limit ?? 1;
     let acceptType: string[] = [];
     if (config.types) for (const type of config.types) acceptType.push(type);
     if (config.mimes) for (const type of config.mimes) {
@@ -104,10 +108,14 @@ export class UploaderComponent {
         console.log('onUploadProgress', arguments);
       },
       onUploadSuccess(fileItem, data, status) {
-        if (fileItem.file instanceof File && FileType.getMimeClass(fileItem.file) == 'image') this.component?.uploadThumb(fileItem);
+        //if (fileItem.file instanceof File && FileType.getMimeClass(fileItem.file) == 'image') this.component?.uploadThumb(fileItem);
         console.log('onUploadSuccess', data, arguments);
       },
-      onUploadError() {
+      onUploadError(filer, res, status) {
+        if (status === 401) {
+          localStorage.removeItem('access_token');
+          location.reload();
+        }
         console.log('onUploadError', arguments);
       },
       onUploadComplete() {
@@ -127,15 +135,17 @@ export class UploaderComponent {
   viewFile!: FileItem;
   imgShow: boolean = false;
 
-  constructor(rendererFactory: RendererFactory2, private wxService: WxService) {
+  constructor(private zone: NgZone, rendererFactory: RendererFactory2, private store: Store<AppState>, private apiService: ApiService) {
     this.render = rendererFactory.createRenderer(null, null);
-    wxService.config(['chooseImage', 'previewImage']).then(wx => this.wx = wx);
+    this.store.select('ui').subscribe(({wx}) => {
+      this.wx = wx;
+    });
   }
 
   ngOnChanges(): void {
-    if (this.files && this.files.length) {
-      this.uploader.addToQueue(this.files);
-    }
+    console.log(this.files);
+    for (const fileItem of this.uploader.queue) this.uploader.removeFromQueue(fileItem);
+    if (this.files && this.files.length) this.uploader.addToQueue(this.files);
   }
 
   isWxBrowserSelectImage() {
@@ -143,8 +153,11 @@ export class UploaderComponent {
   }
 
   selectImage() {
+    if (this.limit < 0 || this.limit > 9) this.limit = 9;
     this.wx.ready(() => {
       this.wx.chooseImage({
+        count: this.limit,
+        sizeType: ['compressed'],
         success: (res: { localIds: any; }) => {
           res.localIds.forEach((localId: any) => {
             // 取本地图片
@@ -156,7 +169,9 @@ export class UploaderComponent {
                 fetch(base64data)
                   .then(res => res.blob())
                   .then(blob => {
-                    this.uploader.addToQueue([new File([blob], Math.random().toString(36).substring(2) + ".jpg", {type: "image/jpeg"})]);
+                    this.zone.run(() => {
+                      this.uploader.addToQueue([new File([blob], Math.random().toString(36).substring(2) + ".jpg", {type: "image/jpeg"})]);
+                    });
                   });
               }
             });
@@ -179,7 +194,7 @@ export class UploaderComponent {
     if (!(fileItem.file instanceof File)) return;
     const ready = new FileReader();
     ready.readAsDataURL(fileItem.file);
-    ready.onload = (ev) => {
+    ready.onload = () => {
       if (ready.result) this.imageCompress(ready.result.toString(), this.render, 75, 1920)
         .then((result: string) => {
           fetch(result)
@@ -205,8 +220,8 @@ export class UploaderComponent {
   onFinished() {
     const uploaded = this.uploader.queue.filter((item: FileItem) => item.isUploaded);
     for (const fileItem of uploaded) {
-      if (this.files && !this.files.find((f: FileItem) => f.id == fileItem.id)) {
-        this.files.push({id: fileItem.id, url: fileItem.uploadedFile});
+      if (this.files && !this.files.find((file) => file.id === parseInt(fileItem.id))) {
+        this.files.push({id: parseInt(fileItem.id), url: fileItem.uploadedFile});
       }
     }
     this.filesChange.emit(this.files);
@@ -227,9 +242,14 @@ export class UploaderComponent {
 
   onDel(fileItem: FileItem) {
     console.log(fileItem);
-    if (this.files && this.files.find((f: FileItem) => f.id == fileItem.id)) {
+    if (this.files && this.files.find((file) => file.id === parseInt(fileItem.id))) {
       // 删除已上传到服务器的文件
-      this.files.filter((f: FileItem) => f.id !== fileItem.id);
+      if (parseInt(fileItem.id) > 0) {
+        this.apiService.delete(`/files/${fileItem.id}`).subscribe((res) => {
+          console.log(res)
+        });
+      }
+      this.files.filter((file) => file.id !== parseInt(fileItem.id));
 
       this.filesChange.emit(this.files);
     }

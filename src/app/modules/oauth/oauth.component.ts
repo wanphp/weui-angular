@@ -14,6 +14,7 @@ export class OauthComponent implements OnInit {
 
   ngOnInit() {
     this.oauthService.configure(authConfig);
+    this.oauthService.setStorage(localStorage)
     this.oauthService.tryLogin().then(() => {
       if (this.oauthService.hasValidAccessToken()) {
         // 认证成功，跳转到受保护的路由

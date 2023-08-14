@@ -19,6 +19,21 @@ export function uiReducer(state: UiState = initialState, action: UiAction) {
         ...state,
         navbarMore: action.payload
       };
+    case Actions.SET_ViewContainerRef:
+      return {
+        ...state,
+        viewContainerRef: action.payload
+      };
+    case Actions.SET_ElementRef:
+      return {
+        ...state,
+        elementRef: action.payload
+      };
+    case Actions.REG_WX:
+      return {
+        ...state,
+        wx: action.payload
+      };
     default:
       return state;
   }

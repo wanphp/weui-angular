@@ -47,7 +47,7 @@ export interface UploaderOptions {
   /**
    * 允许最多上传数量，-1 表示不受限，默认：`-1`
    */
-  limit?: number;
+  limit: number;
 
   /**
    * 限定文件大小（单位：字节），-1 表示不受限，默认：`-1`

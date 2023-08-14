@@ -1,15 +1,20 @@
-import {ApplicationRef, ComponentRef, ElementRef, EmbeddedViewRef, Injectable, ViewContainerRef} from '@angular/core';
+import {ApplicationRef, ComponentRef, ElementRef, Injectable, ViewContainerRef} from '@angular/core';
+import {Store} from "@ngrx/store";
+import {AppState} from "@/store/state";
 
 @Injectable()
 export abstract class ComponentService {
   protected list: Array<ComponentRef<any>> = [];
+  private viewContainerRef!: ViewContainerRef;
+  private elementRef!: ElementRef;
 
-  constructor(protected readonly applicationRef: ApplicationRef) {
+  constructor(private store: Store<AppState>, protected readonly applicationRef: ApplicationRef) {
+    this.store.select('ui').subscribe(({viewContainerRef, elementRef}) => {
+      this.viewContainerRef = viewContainerRef as ViewContainerRef;
+      this.elementRef = elementRef as ElementRef;
+    });
   }
 
-  // 由组件赋值
-  viewContainerRef!: ViewContainerRef;
-  el!: ElementRef;
 
   /**
    * 销毁
@@ -40,7 +45,7 @@ export abstract class ComponentService {
   /** 动态构建组件 */
   protected build<T>(component: new (...args: any[]) => T): ComponentRef<T> {
     const componentRef = this.viewContainerRef.createComponent(component);
-    this.el.nativeElement.appendChild(componentRef.location.nativeElement);
+    this.elementRef.nativeElement.appendChild(componentRef.location.nativeElement);
     this.list.push(componentRef);
     componentRef.onDestroy(() => {
       this.applicationRef.detachView(componentRef.hostView);

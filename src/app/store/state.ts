@@ -1,6 +1,7 @@
 import {UiState} from './ui/state';
+import {AuthState} from "@/store/auth/state";
 
 export interface AppState {
-    auth: any;
-    ui: UiState;
+  auth: AuthState;
+  ui: UiState;
 }

@@ -32,6 +32,13 @@ export interface UploaderConfig {
   size?: number;
 }
 
+export interface uploadFile {
+  id: number;
+  url: string;
+  thumbId?: number;
+  thumb?: string;
+}
+
 @Component({
   selector: 'app-uploader',
   templateUrl: './uploader.component.html',
@@ -47,7 +54,7 @@ export class UploaderComponent {
   @ViewChild('media') media!: ElementRef;
 
   @Input() title: string = '';
-  @Input() files: { url: string; id: number; }[] = [];
+  @Input() files: uploadFile[] = [];
   @Output() filesChange = new EventEmitter();
 
   @Input()
@@ -98,7 +105,6 @@ export class UploaderComponent {
         console.log('onStart', arguments);
       },
       onFinished() {
-        this.component?.onFinished();
         console.log('onFinished', arguments);
       },
       onUploadStart() {
@@ -108,7 +114,8 @@ export class UploaderComponent {
         console.log('onUploadProgress', arguments);
       },
       onUploadSuccess(fileItem, data, status) {
-        //if (fileItem.file instanceof File && FileType.getMimeClass(fileItem.file) == 'image') this.component?.uploadThumb(fileItem);
+        this.component?.uploadSuccess(fileItem);
+        if (fileItem.file instanceof File && FileType.getMimeClass(fileItem.file) == 'image') this.component?.uploadThumb(fileItem);
         console.log('onUploadSuccess', data, arguments);
       },
       onUploadError(filer, res, status) {
@@ -143,7 +150,7 @@ export class UploaderComponent {
   }
 
   ngOnChanges(): void {
-    console.log(this.files);
+    console.log('ngOnChanges', this.files);
     for (const fileItem of this.uploader.queue) this.uploader.removeFromQueue(fileItem);
     if (this.files && this.files.length) this.uploader.addToQueue(this.files);
   }
@@ -191,8 +198,9 @@ export class UploaderComponent {
 
   uploadThumb(fileItem: FileItem) {
     console.log(fileItem);
-    if (!(fileItem.file instanceof File)) return;
+    if (!(fileItem.file instanceof File) || !fileItem.isSuccess) return;
     const ready = new FileReader();
+    const fileName = fileItem.file.name;
     ready.readAsDataURL(fileItem.file);
     ready.onload = () => {
       if (ready.result) this.imageCompress(ready.result.toString(), this.render, 75, 1920)
@@ -201,28 +209,26 @@ export class UploaderComponent {
             .then(res => res.blob())
             .then(blob => {
               const formData: FormData = new FormData();
-              formData.append('file', new File([blob], "wxUpload", {type: "image/jpeg"}), 'wxUpload.jpg');
+              formData.append('file', new File([blob], fileName, {type: "image/jpeg"}), fileName);
               // 上传图片到服务器
-              // this.http.post(`${environment.apiUrl}/api/files`, formData).subscribe(
-              //   (res: any) => {
-              //     this.zone.run(() => {
-              //       this.serverIds.set(localId, res.id + '|' + res.url);
-              //     });
-              //     this.addImageEvent.emit(res.id + '|' + res.url);
-              //   }
-              // )
+              this.apiService.post('/files', formData, false).subscribe(
+                (res: any) => {
+                  let file = this.files.find((file) => file.id === parseInt(fileItem.id));
+                  if (file) {
+                    file.thumbId = res.id;
+                    file.thumb = res.url;
+                  }
+                }
+              )
             });
         });
     }
   }
 
   // 文件上传完成
-  onFinished() {
-    const uploaded = this.uploader.queue.filter((item: FileItem) => item.isUploaded);
-    for (const fileItem of uploaded) {
-      if (this.files && !this.files.find((file) => file.id === parseInt(fileItem.id))) {
-        this.files.push({id: parseInt(fileItem.id), url: fileItem.uploadedFile});
-      }
+  uploadSuccess(fileItem: FileItem) {
+    if (this.files && !this.files.find((file) => file.id === parseInt(fileItem.id))) {
+      this.files.push({id: parseInt(fileItem.id), url: fileItem.uploadedFile});
     }
     this.filesChange.emit(this.files);
   }
@@ -237,11 +243,10 @@ export class UploaderComponent {
       this.imgShow = !this.imgShow;
       if (this.media) this.media.nativeElement.pause();
     }
-    console.log(event.target.nodeName)
   }
 
   onDel(fileItem: FileItem) {
-    console.log(fileItem);
+    console.log(fileItem, this.files);
     if (this.files && this.files.find((file) => file.id === parseInt(fileItem.id))) {
       // 删除已上传到服务器的文件
       if (parseInt(fileItem.id) > 0) {
@@ -249,7 +254,7 @@ export class UploaderComponent {
           console.log(res)
         });
       }
-      this.files.filter((file) => file.id !== parseInt(fileItem.id));
+      this.files = this.files.filter((file) => file.id !== parseInt(fileItem.id));
 
       this.filesChange.emit(this.files);
     }

@@ -8,5 +8,6 @@ export const authConfig: AuthConfig = {
   redirectUri: window.location.origin + '/weui-angular/oauth',
   responseType: 'code',
   requireHttps: true,
-  skipSubjectCheck: true
+  skipSubjectCheck: true,
+  decreaseExpirationBySec: 60000
 };

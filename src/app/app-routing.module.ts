@@ -1,10 +1,11 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {RouterModule, Routes} from '@angular/router';
 import {AuthGuard} from "@guards/auth.guard";
 import {NonAuthGuard} from "@guards/non-auth.guard";
 import {OauthComponent} from "@modules/oauth/oauth.component";
 import {MainComponent} from "@modules/main/main.component";
 import {ProfileComponent} from "@pages/profile/profile.component";
+import {UploadFileComponent} from "@pages/upload-file/upload-file.component";
 
 const routes: Routes = [
   {
@@ -16,6 +17,10 @@ const routes: Routes = [
       {
         path: 'profile',
         component: ProfileComponent
+      },
+      {
+        path: 'upload',
+        component: UploadFileComponent
       },
     ]
   },
@@ -31,4 +36,5 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {
+}

@@ -8,6 +8,7 @@ import {OAuthModule} from "angular-oauth2-oidc";
 import {OauthComponent} from "@modules/oauth/oauth.component";
 import {StoreModule} from "@ngrx/store";
 import {uiReducer} from "@/store/ui/reducer";
+import {authReducer} from "@/store/auth/reducer";
 import {ProfileComponent} from '@pages/profile/profile.component';
 import {HttpClientModule} from "@angular/common/http";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
@@ -18,7 +19,8 @@ import {InfiniteloaderComponent} from "@components/infiniteloader/infiniteloader
 import {ToastComponent} from '@components/toast/toast.component';
 import {ToptipsComponent} from '@components/toptips/toptips.component';
 import {SearchbarComponent} from '@components/searchbar/searchbar.component';
-import { UploaderComponent } from './components/uploader/uploader.component';
+import {UploaderComponent} from '@components/uploader/uploader.component';
+import {UploadFileComponent} from '@pages/upload-file/upload-file.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +35,7 @@ import { UploaderComponent } from './components/uploader/uploader.component';
     ToptipsComponent,
     SearchbarComponent,
     UploaderComponent,
+    UploadFileComponent,
   ],
   imports: [
     BrowserModule,
@@ -41,7 +44,7 @@ import { UploaderComponent } from './components/uploader/uploader.component';
     AppRoutingModule,
     HttpClientModule,
     OAuthModule.forRoot(),
-    StoreModule.forRoot({ui: uiReducer}),
+    StoreModule.forRoot({auth: authReducer, ui: uiReducer}),
   ],
   providers: [],
   bootstrap: [AppComponent]

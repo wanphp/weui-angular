@@ -1,23 +1,20 @@
-import {Component} from '@angular/core';
-import {UploaderConfig} from "@components/uploader/uploader.component";
+import {Component, OnInit} from '@angular/core';
+import {UserService} from "@services/user.service";
+import {UserEntity} from "@/entities/user.entity";
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']
 })
-export class ProfileComponent {
-  uploadConfig!: UploaderConfig;
-  files: any;
+export class ProfileComponent implements OnInit {
+  user: UserEntity = {} as UserEntity;
 
-  constructor() {
-    this.uploadConfig = {
-      url: 'string',
-      headers: {},
-      auto: false,
-      mimes: ['image', 'video','audio'],
-      limit: -1,
-      size: 1024 * 1024 * 100
-    } as UploaderConfig;
+  constructor(private userService: UserService) {
+
+  }
+
+  ngOnInit(): void {
+    this.userService.getUser().subscribe(user => this.user = user);
   }
 }

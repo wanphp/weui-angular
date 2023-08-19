@@ -1,6 +1,5 @@
 import {Uploader} from './uploader.class';
 import {UploaderOptions} from './uploader.options';
-import {ParallelHasher} from "ts-md5";
 import {FileType} from "@components/uploader/file-type.class";
 
 /**
@@ -78,14 +77,10 @@ export class FileItem {
   protected uploader: Uploader;
 
   constructor(uploader: Uploader, file: File | string, options?: UploaderOptions) {
-    const hasher = new ParallelHasher('./assets/js/md5_worker.js');
     this.uploader = uploader;
     if (options) this.setOptions(options);
     let fileMimeClass = '';
     if (file instanceof File) {
-      hasher.hash(file).then((result: any) => {
-        this.id = result;
-      });
       fileMimeClass = FileType.getMimeClass(file);
     } else {
       fileMimeClass = FileType.fileTypeDetection(file);

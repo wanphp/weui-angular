@@ -1,4 +1,5 @@
 import {Navbar} from "@/store/ui/navbar";
+import {ElementRef, ViewContainerRef} from "@angular/core";
 
 export default <UiState>{
   theme: localStorage.getItem('theme'),
@@ -15,7 +16,14 @@ export default <UiState>{
       title: '联系',
       badge: 10,
       link: '/profile'
-    }],
+    },
+    {
+      active: false,
+      icon: 'fa-solid fa-upload',
+      title: '上传',
+      link: '/upload'
+    }
+  ],
   navbarMore: [{
     active: false,
     icon: 'fas fa-home',
@@ -43,4 +51,7 @@ export interface UiState {
   theme: string;
   navbar: Navbar[];
   navbarMore: Navbar[];
+  viewContainerRef?: ViewContainerRef;
+  elementRef?: ElementRef;
+  wx?: any;
 }

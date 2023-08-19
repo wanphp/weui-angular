@@ -19,7 +19,7 @@
       <p class="weui-tabbar__label">更多</p>
     </div>
   </div>
-  <app-popup #popup [config]="{is_head:false}" *ngIf="navbarMore.length>0">
+  <app-popup #popup [config]="{is_head:false}">
     <div class="weui-grids">
       <a class="weui-grid" *ngFor="let item of navbarMore" [ngClass]="{ 'weui-grid_on': item.active }" (click)="onSelectNavbarMore(item)">
         <div class="weui-grid__icon" style="position: relative">

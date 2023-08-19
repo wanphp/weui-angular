@@ -1,8 +1,10 @@
 import {FileItem} from './file-item.class';
 import {FileType} from './file-type.class';
 import {UploaderOptions} from './uploader.options';
+import {ParallelHasher} from "ts-md5";
 
 export class Uploader {
+  private hasher = new ParallelHasher('./assets/js/md5_worker.js');
   private _options!: UploaderOptions;
   private _queue: FileItem[] = [];
   private _progress: number = 0;
@@ -240,36 +242,10 @@ export class Uploader {
 
   private _xhrTransport(item: FileItem, totalPieces: number = 0, sliceIndex: number = 0): any {
     if (!(item.file instanceof File)) return;
-    item._onBeforeUpload();
+    if (sliceIndex === 0) item._onBeforeUpload();
+    if (item.file.size == 0) throw new TypeError('选择文件无效');
 
     const xhr = (item._xhr = new XMLHttpRequest());
-    let sendAble: FormData = new FormData();
-    if (item.file.size == 0) {
-      throw new TypeError('The file specified is no longer valid');
-    }
-
-    Object.keys(this._options.params || {}).forEach((key: string) => sendAble.append(key, this._options.params![key]));
-    // 上传分片大小
-    const bytesPerPiece = 2097125; // 2097125=1024*1024*2
-    if (item.file.size > bytesPerPiece) {
-      const start = sliceIndex * bytesPerPiece;
-      if (start >= item.file.size) return this; //退出循环
-      let end = start + bytesPerPiece;
-      if (end > item.file.size) end = item.file.size;
-
-      const chunk = item.file.slice(start, end); //切割文件
-      if (totalPieces == 0) totalPieces = Math.ceil(item.file.size / bytesPerPiece); //计算文件切片总数
-      //存业务属性
-      sendAble.append("file", chunk, item.file.name); //文件分片
-      sendAble.append("current_chunk", (sliceIndex + 1).toString());//分片索引,服务器从1开始
-      sendAble.append("chunks", totalPieces.toString());//切片总数
-      sendAble.append('md5', item.id);
-      sendAble.append('size', item.file.size.toString());
-      sendAble.append('type', item.file.type);
-    } else {
-      sendAble.append('file', item.file, item.file.name);
-    }
-
     xhr.upload.onprogress = (event: any) => {
       if (totalPieces == 0) {
         const progress = Math.round(event.lengthComputable ? (event.loaded * 100) / event.total : 0);
@@ -278,19 +254,21 @@ export class Uploader {
     };
     xhr.onload = () => {
       const headers = this._parseHeaders(xhr.getAllResponseHeaders());
-      if (totalPieces == 0 || (totalPieces > 0 && totalPieces === sliceIndex)) {
-        if (xhr.status == 200) item._onSuccess(xhr.response, xhr.status, headers);
-        else item._onError(xhr.response, xhr.status, headers);
-        this._onCompleteItem(item, xhr.response, xhr.status, headers);
-      } else {
-        const progress = Math.round(sliceIndex / totalPieces * 100); // 上传进度条进度
-        this._onProgressItem(item, progress);
-        // 分片上传下一块
-        if (xhr.status == 200) this._xhrTransport(item, totalPieces, sliceIndex + 1);
-        else {
-          item._onError(xhr.response, xhr.status, headers);
+      if (xhr.status == 200) {
+        // 分片上传完成
+        if (xhr.response.current_chunk) {
+          sliceIndex = parseInt(xhr.response.current_chunk);
+          // 文件上传进度更新
+          this._onProgressItem(item, Math.round(sliceIndex / totalPieces * 100));
+          // 传下一片
+          this._xhrTransport(item, totalPieces, sliceIndex);
+        } else {
+          item._onSuccess(xhr.response, xhr.status, headers); // 文件上传完成
           this._onCompleteItem(item, xhr.response, xhr.status, headers);
         }
+      } else {
+        item._onError(xhr.response, xhr.status, headers);
+        this._onCompleteItem(item, xhr.response, xhr.status, headers);
       }
     };
     xhr.onerror = () => {
@@ -306,7 +284,41 @@ export class Uploader {
     xhr.open('POST', item.options!.url!, true);
     xhr.responseType = 'json';
     Object.keys(this._options.headers || {}).forEach((key: string) => xhr.setRequestHeader(key, this._options.headers![key]));
-    xhr.send(sendAble);
+
+    let sendAble: FormData = new FormData();
+    Object.keys(this._options.params || {}).forEach((key: string) => sendAble.append(key, this._options.params![key]));
+    // 上传分片大小
+    const bytesPerPiece = 2097152; // 2097152=1024*1024*2
+    if (item.file.size > bytesPerPiece) {
+      const start = sliceIndex * bytesPerPiece;
+      if (start >= item.file.size) return this; //退出循环
+      let end = start + bytesPerPiece;
+      if (end > item.file.size) end = item.file.size;
+
+      const chunk = item.file.slice(start, end); //切割文件
+      if (totalPieces == 0) totalPieces = Math.ceil(item.file.size / bytesPerPiece); //计算文件切片总数
+      //存业务属性
+      sendAble.append("file", chunk, item.file.name); //文件分片
+      sendAble.append("current_chunk", (sliceIndex + 1).toString());//分片索引,服务器从1开始
+      sendAble.append("chunks", totalPieces.toString());//切片总数
+      sendAble.append('size', item.file.size.toString());
+      sendAble.append('type', item.file.type);
+      if (!item.id) {
+        // 计算文件md5值
+        this.hasher.hash(item.file).then((result: any) => {
+          item.id = result;
+          sendAble.append('md5', item.id);
+          xhr.send(sendAble);
+        });
+      } else {
+        sendAble.append('md5', item.id);
+        xhr.send(sendAble);
+      }
+    } else {
+      item.id = Math.random().toString(36).substring(7);
+      sendAble.append('file', item.file, item.file.name);
+      xhr.send(sendAble);
+    }
     return this;
   }
 

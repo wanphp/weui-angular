@@ -1,10 +1,8 @@
 import {FileItem} from './file-item.class';
 import {FileType} from './file-type.class';
 import {UploaderOptions} from './uploader.options';
-import {ParallelHasher} from "ts-md5";
 
 export class Uploader {
-  private hasher = new ParallelHasher('./assets/js/md5_worker.js');
   private _options!: UploaderOptions;
   private _queue: FileItem[] = [];
   private _progress: number = 0;
@@ -305,7 +303,7 @@ export class Uploader {
       sendAble.append('type', item.file.type);
       if (!item.id) {
         // 计算文件md5值
-        this.hasher.hash(item.file).then((result: any) => {
+        this._options.parallelHash.hash(item.file).then((result: any) => {
           item.id = result;
           sendAble.append('md5', item.id);
           xhr.send(sendAble);

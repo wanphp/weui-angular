@@ -7,7 +7,11 @@ import {UploaderComponent} from "@components/uploader/uploader.component";
  * 组件配置项对象接口
  */
 export interface UploaderOptions {
-  component?: UploaderComponent,
+  component: UploaderComponent,
+  /**
+   * 计算文件md5
+   */
+  parallelHash: any,
   /**
    * 服务端网址
    */

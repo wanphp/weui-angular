@@ -6,6 +6,7 @@ import {AppState} from "@/store/state";
 import {catchError} from "rxjs/operators";
 import {authConfig} from "@/utils/oauth.config";
 import {ToptipsService} from "@components/toptips/toptips.service";
+import {ParallelHasher} from "ts-md5";
 
 @Injectable({
   providedIn: 'root'
@@ -67,4 +68,11 @@ export class ApiService {
     return of(undefined);
   }
 
+  private hasher: any;
+
+  public parallelHash() {
+    if (this.hasher) return this.hasher;
+    this.hasher = new ParallelHasher('./assets/js/md5_worker.js');
+    return this.hasher;
+  }
 }

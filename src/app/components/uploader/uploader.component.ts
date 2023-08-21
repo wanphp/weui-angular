@@ -94,6 +94,7 @@ export class UploaderComponent {
     this.acceptType = acceptType.join();
     this.uploader = new Uploader({
       component: this,
+      parallelHash: this.apiService.parallelHash(),
       ...config,
       onFileQueued() {
         console.log('onFileQueued', arguments);

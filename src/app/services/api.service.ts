@@ -13,6 +13,7 @@ import {ParallelHasher} from "ts-md5";
 })
 export class ApiService {
   private headers = new HttpHeaders();
+  private apiUrl = `${authConfig.issuer}/api`;
 
   constructor(
     private http: HttpClient,
@@ -24,6 +25,10 @@ export class ApiService {
     });
   }
 
+  setApiUrl(apiUrl: string) {
+    this.apiUrl = apiUrl;
+  }
+
   protected getParams(data: Map<string, string | number>): string {
     let params = new HttpParams();
     for (let [key, value] of data) {
@@ -32,30 +37,30 @@ export class ApiService {
     return params.toString();
   }
 
-  post(url: string, body: any, json: boolean = true): Observable<any> {
+  post(path: string, body: any, json: boolean = true): Observable<any> {
     let headers = this.headers;
     if (json) headers = this.headers.set('Content-Type', 'application/json');
-    return this.http.post<any>(`${authConfig.issuer}/api${url}`, body, {headers: headers}).pipe(catchError(error => this.handleError(error)));
+    return this.http.post<any>(this.apiUrl + path, body, {headers: headers}).pipe(catchError(error => this.handleError(error)));
   }
 
-  put(url: string, body: any, json: boolean = true): Observable<any> {
+  put(path: string, body: any, json: boolean = true): Observable<any> {
     let headers = this.headers;
     if (json) headers = this.headers.set('Content-Type', 'application/json');
-    return this.http.put<any>(`${authConfig.issuer}/api${url}`, body, {headers: headers}).pipe(catchError(error => this.handleError(error)));
+    return this.http.put<any>(this.apiUrl + path, body, {headers: headers}).pipe(catchError(error => this.handleError(error)));
   }
 
-  patch(url: string, body: any, json: boolean = true): Observable<any> {
+  patch(path: string, body: any, json: boolean = true): Observable<any> {
     let headers = this.headers;
     if (json) headers = this.headers.set('Content-Type', 'application/json');
-    return this.http.patch<any>(`${authConfig.issuer}/api${url}`, body, {headers: headers}).pipe(catchError(error => this.handleError(error)));
+    return this.http.patch<any>(this.apiUrl + path, body, {headers: headers}).pipe(catchError(error => this.handleError(error)));
   }
 
-  get(url: string): Observable<any> {
-    return this.http.get<any>(`${authConfig.issuer}/api${url}`, {headers: this.headers}).pipe(catchError(error => this.handleError(error)));
+  get(path: string): Observable<any> {
+    return this.http.get<any>(this.apiUrl + path, {headers: this.headers}).pipe(catchError(error => this.handleError(error)));
   }
 
-  delete(url: string): Observable<any> {
-    return this.http.delete<any>(`${authConfig.issuer}/api${url}`, {headers: this.headers}).pipe(catchError(error => this.handleError(error)));
+  delete(path: string): Observable<any> {
+    return this.http.delete<any>(this.apiUrl + path, {headers: this.headers}).pipe(catchError(error => this.handleError(error)));
   }
 
   private handleError(response: HttpErrorResponse): Observable<any> {

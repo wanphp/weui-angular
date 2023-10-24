@@ -1,6 +1,7 @@
 import {FileItem} from './file-item.class';
 import {FileType} from './file-type.class';
 import {UploaderOptions} from './uploader.options';
+import {uploadFile} from "@components/uploader/uploader.component";
 
 export class Uploader {
   private _options!: UploaderOptions;
@@ -95,7 +96,7 @@ export class Uploader {
 
     // 大小
     if (this._options.size && this._options.size > 0 && file.size > this._options.size) {
-      this._failFilterMessage = '文件太大';
+      this._failFilterMessage = '只能上传' + (this._options.size / 1024 / 1024) + 'M以内的文件，当前文件' + (file.size / 1024 / 1024).toFixed(2) + 'M';
       return false;
     }
 
@@ -128,7 +129,7 @@ export class Uploader {
    * @param files 文件列表
    * @param options 强制重新指定新 `options` 内容
    */
-  addToQueue(files: File[] | { url: string; id: number; }[], options?: UploaderOptions): void {
+  addToQueue(files: File[] | uploadFile[], options?: UploaderOptions): void {
     const count = this._queue.length;
     if (!options) {
       options = this._options;

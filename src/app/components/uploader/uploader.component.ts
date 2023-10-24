@@ -6,6 +6,7 @@ import {FileType} from "@components/uploader/file-type.class";
 import {ApiService} from "@services/api.service";
 import {Store} from "@ngrx/store";
 import {AppState} from "@/store/state";
+import {ToptipsService} from "@components/toptips/toptips.service";
 
 export interface UploaderConfig {
   url: string;
@@ -35,6 +36,7 @@ export interface UploaderConfig {
 export interface uploadFile {
   id: number;
   url: string;
+  type?: string;
   thumbId?: number;
   thumb?: string;
 }
@@ -115,8 +117,10 @@ export class UploaderComponent {
         console.log('onUploadProgress', arguments);
       },
       onUploadSuccess(fileItem, data, status) {
-        this.component?.uploadSuccess(fileItem);
-        if (fileItem.file instanceof File && FileType.getMimeClass(fileItem.file) == 'image') this.component?.uploadThumb(fileItem);
+        if (fileItem.file instanceof File) {
+          this.component?.uploadSuccess(fileItem);
+          if (FileType.getMimeClass(fileItem.file) == 'image') this.component?.uploadThumb(fileItem);
+        }
         console.log('onUploadSuccess', data, arguments);
       },
       onUploadError(filer, res, status) {
@@ -132,7 +136,8 @@ export class UploaderComponent {
       onUploadCancel() {
         console.log('onUploadCancel', arguments);
       },
-      onError() {
+      onError(file, message) {
+        this.component.error(message);
         console.log('onError', arguments);
       },
     } as UploaderOptions);
@@ -143,7 +148,13 @@ export class UploaderComponent {
   viewFile!: FileItem;
   imgShow: boolean = false;
 
-  constructor(private zone: NgZone, rendererFactory: RendererFactory2, private store: Store<AppState>, private apiService: ApiService) {
+  constructor(
+    private zone: NgZone,
+    rendererFactory: RendererFactory2,
+    private store: Store<AppState>,
+    private apiService: ApiService,
+    private topTipsService: ToptipsService
+  ) {
     this.render = rendererFactory.createRenderer(null, null);
     this.store.select('ui').subscribe(({wx}) => {
       this.wx = wx;
@@ -151,8 +162,8 @@ export class UploaderComponent {
   }
 
   ngOnChanges(): void {
-    console.log('ngOnChanges', this.files);
-    for (const fileItem of this.uploader.queue) this.uploader.removeFromQueue(fileItem);
+    console.log('ngOnChanges', this.files, this.uploader.queue);
+    if (this.uploader.queue.length > 0) for (const fileItem of this.uploader.queue) this.uploader.removeFromQueue(fileItem);
     if (this.files && this.files.length) this.uploader.addToQueue(this.files);
   }
 
@@ -210,14 +221,17 @@ export class UploaderComponent {
             .then(res => res.blob())
             .then(blob => {
               const formData: FormData = new FormData();
+              formData.append('id', fileItem.id);
               formData.append('file', new File([blob], fileName, {type: "image/jpeg"}), fileName);
               // 上传图片到服务器
-              this.apiService.post('/files', formData, false).subscribe(
+              this.apiService.post('/upload/image', formData, false).subscribe(
                 (res: any) => {
                   let file = this.files.find((file) => file.id === parseInt(fileItem.id));
                   if (file) {
                     file.thumbId = res.id;
                     file.thumb = res.url;
+                    this.files.splice(this.files.findIndex((file) => file.id === parseInt(fileItem.id)), 1, file);
+                    this.filesChange.emit(this.files);
                   }
                 }
               )
@@ -229,9 +243,12 @@ export class UploaderComponent {
   // 文件上传完成
   uploadSuccess(fileItem: FileItem) {
     if (this.files && !this.files.find((file) => file.id === parseInt(fileItem.id))) {
-      this.files.push({id: parseInt(fileItem.id), url: fileItem.uploadedFile});
+      this.files.push({id: parseInt(fileItem.id), url: fileItem.uploadedFile, type: fileItem.fileMimeClass});
+    } else {
+      // 重复上传移除文件
+      this.uploader.removeFromQueue(fileItem);
     }
-    this.filesChange.emit(this.files);
+    if (fileItem.fileMimeClass !== 'image') this.filesChange.emit(this.files);
   }
 
   onGallery(item: FileItem) {
@@ -255,6 +272,14 @@ export class UploaderComponent {
           console.log(res)
         });
       }
+      const result = this.files.find(item => item.id === parseInt(fileItem.id));
+      if (result && result.thumbId && result.thumbId > 0) {
+        // 删除缩略图片
+        this.apiService.delete(`/image/${result.thumbId}`).subscribe((res) => {
+          console.log(res)
+        });
+      }
+
       this.files = this.files.filter((file) => file.id !== parseInt(fileItem.id));
 
       this.filesChange.emit(this.files);
@@ -301,4 +326,8 @@ export class UploaderComponent {
       sourceImage.onerror = e => reject(e);
       sourceImage.src = imageDataUrlSource;
     });
+
+  error(message: string) {
+    this.topTipsService.warn(message, 5000);
+  }
 }

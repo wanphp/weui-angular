@@ -1,4 +1,4 @@
-<div class="weui-mask" [ngClass]="{ 'weui-mask__in': shown }" (click)="hide(true)"></div>
+<div class="weui-mask" [ngClass]="{ 'weui-mask__in': shown }" (click)="hide(true)" style="bottom: 0;top: 0;left: 0;right: 0"></div>
 <div class="weui-dialog" [ngClass]="{ 'weui-dialog__in': shown,'weui-dialog__prompt': config.type === 'prompt' }" #container>
   <div class="weui-dialog__hd" *ngIf="config.title">
     <strong class="weui-dialog__title">{{ config.title }}</strong>

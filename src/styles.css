@@ -12,6 +12,7 @@ app-main {
 
 body {
   background-color: var(--weui-BG-0);
+  color: var(--weui-FG-0);;
 }
 
 .weui-media-box__info {
@@ -125,9 +126,7 @@ body {
   float: right;
 }
 
-.plate_num {
-  background: #0073b7;
-  color: #fff;
-  border-radius: 2px;
-  padding: 0 5px;
+.weui-uploader__input-box, .weui-uploader__file {
+  width: 48px;
+  height: 48px;
 }

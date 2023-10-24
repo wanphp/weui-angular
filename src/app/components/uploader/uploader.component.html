@@ -12,10 +12,8 @@
                 (click)="onGallery(item)" [ngClass]="{ 'weui-uploader__file_status': item.isError||item.isUploading }"
                 [style.background-size]="item.fileMimeClass!=='image'?'70% 70%':''"
                 [style.background-color]="item.fileMimeClass!=='image'?'#ededed':''">
-              <div class="weui-uploader__file-content" *ngIf="item.isUploading">{{ item.progress }}%</div>
-              <div class="weui-uploader__file-content" *ngIf="item.isError">
-                <i class="weui-icon-warn"></i>
-              </div>
+              <div class="weui-uploader__file-content text-red" *ngIf="item.isUploading">{{ item.progress }}%</div>
+              <div class="weui-uploader__file-content" *ngIf="item.isError"><i class="weui-icon-warn"></i></div>
             </li>
           </ul>
           <div class="weui-uploader__input-box" *ngIf="uploader.queue.length<uploader.options.limit">
@@ -26,7 +24,8 @@
           </div>
         </div>
       </div>
-      <div *ngIf="viewFile" [style.display]="imgShow ? 'block' : 'none'" class="weui-gallery" (click)="hideGallery($event)">
+      <div *ngIf="viewFile" [style.display]="imgShow ? 'block' : 'none'" class="weui-gallery" (click)="hideGallery($event)"
+           style="top: 0; left: 0;right: 0;bottom: 0">
         <span class="weui-gallery__img" style="background-image: url('{{viewFile.thumb}}');display: flex; align-items: center;"
               [style.background-size]="!['image','video','audio'].includes(viewFile.fileMimeClass)?'70% 70%':''"
               [style.background-color]="!['image','video','audio'].includes(viewFile.fileMimeClass)?'white':''">

@@ -37,6 +37,7 @@ export class WxService {
               signature: data.signature,
               jsApiList: jsApiList
             });
+            if (!allowShare) wx.hideOptionMenu();
             resolve(wx);
           } else {
             reject('jsapi 获取失败');

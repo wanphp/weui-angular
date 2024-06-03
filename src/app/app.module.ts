@@ -10,7 +10,7 @@ import {StoreModule} from "@ngrx/store";
 import {uiReducer} from "@/store/ui/reducer";
 import {authReducer} from "@/store/auth/reducer";
 import {ProfileComponent} from '@pages/profile/profile.component';
-import {HttpClientModule} from "@angular/common/http";
+import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {FormsModule} from "@angular/forms";
 import {DialogComponent} from "@components/dialog/dialog.component";
@@ -22,32 +22,25 @@ import {SearchbarComponent} from '@components/searchbar/searchbar.component';
 import {UploaderComponent} from '@components/uploader/uploader.component';
 import {UploadFileComponent} from '@pages/upload-file/upload-file.component';
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    MainComponent,
-    OauthComponent,
-    ProfileComponent,
-    PopupComponent,
-    DialogComponent,
-    InfiniteloaderComponent,
-    ToastComponent,
-    ToptipsComponent,
-    SearchbarComponent,
-    UploaderComponent,
-    UploadFileComponent,
-  ],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    FormsModule,
-    AppRoutingModule,
-    HttpClientModule,
-    OAuthModule.forRoot(),
-    StoreModule.forRoot({auth: authReducer, ui: uiReducer}),
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
-})
+@NgModule({ declarations: [
+        AppComponent,
+        MainComponent,
+        OauthComponent,
+        ProfileComponent,
+        PopupComponent,
+        DialogComponent,
+        InfiniteloaderComponent,
+        ToastComponent,
+        ToptipsComponent,
+        SearchbarComponent,
+        UploaderComponent,
+        UploadFileComponent,
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        BrowserAnimationsModule,
+        FormsModule,
+        AppRoutingModule,
+        OAuthModule.forRoot(),
+        StoreModule.forRoot({ auth: authReducer, ui: uiReducer })], providers: [provideHttpClient(withInterceptorsFromDi())] })
 export class AppModule {
 }

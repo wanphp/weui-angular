@@ -1,7 +1,8 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewEncapsulation} from '@angular/core';
 import {Observable, Observer} from "rxjs";
 import {animate, state, style, transition, trigger} from "@angular/animations";
-import {PopupConfig} from "@components/popup/popup.config";
+import {PopupConfig} from "./popup.config";
+import {NgClass, NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-popup',
@@ -20,6 +21,11 @@ import {PopupConfig} from "@components/popup/popup.config";
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
+  imports: [
+    NgClass,
+    NgIf
+  ],
+  standalone: true
 })
 export class PopupComponent {
   private observer!: Observer<boolean>;

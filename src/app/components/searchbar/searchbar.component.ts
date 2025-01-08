@@ -12,6 +12,7 @@ import {
 } from '@angular/core';
 import {Subject, Subscription} from "rxjs";
 import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
+import {FormsModule} from "@angular/forms";
 
 @Component({
   selector: 'app-searchbar',
@@ -23,6 +24,10 @@ import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
   },
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    FormsModule
+  ],
   encapsulation: ViewEncapsulation.None
 })
 export class SearchbarComponent implements OnInit, OnDestroy {
@@ -67,6 +72,7 @@ export class SearchbarComponent implements OnInit, OnDestroy {
   }
 
   _doFocus(): void {
+    this._focus = true;
     this._term.nativeElement.focus();
   }
 

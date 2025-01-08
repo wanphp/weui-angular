@@ -1,12 +1,13 @@
 import {Injectable} from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
+import {HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Observable, of} from "rxjs";
 import {Store} from "@ngrx/store";
-import {AppState} from "@/store/state";
 import {catchError} from "rxjs/operators";
-import {authConfig} from "@/utils/oauth.config";
-import {ToptipsService} from "@components/toptips/toptips.service";
+import {authConfig} from '../app.config';
 import {ParallelHasher} from "ts-md5";
+import {AuthState} from '../store/auth/reducer';
+import {AppState} from '../store';
+import {ToptipsService} from "../components/toptips/toptips.service";
 
 @Injectable({
   providedIn: 'root'
@@ -20,8 +21,8 @@ export class ApiService {
     private store: Store<AppState>,
     private topTipsService: ToptipsService
   ) {
-    this.store.select('auth').subscribe(({token}) => {
-      this.headers = this.headers.set('Authorization', 'Bearer ' + token);
+    this.store.select('auth').subscribe(({accessToken}: AuthState) => {
+      this.headers = this.headers.set('Authorization', 'Bearer ' + accessToken);
     });
   }
 

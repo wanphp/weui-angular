@@ -1,20 +1,21 @@
-import * as Actions from './actions';
-import {AuthAction} from './actions';
-import initialState, {AuthState} from './state';
+import {createReducer, on} from '@ngrx/store';
+import {loginAction, loginSuccessAction} from './actions';
+import {UserModel} from '../../model/user.model';
 
-export function authReducer(state: AuthState = initialState, action: AuthAction) {
-  switch (action.type) {
-    case Actions.ACCESS_TOKEN:
-      return {
-        ...state,
-        token: action.payload
-      };
-    case Actions.CURRENT_USER:
-      return {
-        ...state,
-        currentUser: action.payload
-      };
-    default:
-      return state;
-  }
+export interface AuthState {
+  loginUser: UserModel | null;
+  accessToken: string;
 }
+
+export const initialState: AuthState = {
+  loginUser: null,
+  accessToken: '',
+};
+
+export const authReducer = createReducer(
+  initialState,
+  on(loginAction, (state, {loginUser}) => ({...state, loginUser})),
+  on(loginSuccessAction, (state, {accessToken}) => ({...state, accessToken}))
+);
+
+

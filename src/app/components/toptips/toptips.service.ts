@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
-import {ComponentService} from "@components/component.service";
-import {ToptipsComponent} from "@components/toptips/toptips.component";
-import {ToptipsConfig} from "@components/toptips/toptips.config";
+import {ToptipsComponent} from "./toptips.component";
+import {ToptipsConfig} from "./toptips.config";
+import {ComponentService} from "../component.service";
 
 @Injectable({providedIn: 'root'})
 export class ToptipsService extends ComponentService {

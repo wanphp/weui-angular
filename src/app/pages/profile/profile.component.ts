@@ -1,14 +1,15 @@
 import {Component, OnInit} from '@angular/core';
-import {UserService} from "@services/user.service";
-import {UserEntity} from "@/entities/user.entity";
+import {UserService} from "../../services/user.service";
+import {UserModel} from "../../model/user.model";
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
+  standalone: true,
   styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent implements OnInit {
-  user: UserEntity = {} as UserEntity;
+  user: UserModel = {} as UserModel;
 
   constructor(private userService: UserService) {
 

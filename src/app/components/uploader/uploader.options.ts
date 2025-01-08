@@ -1,7 +1,7 @@
 import {Observable} from 'rxjs';
 
 import {FileItem} from './file-item.class';
-import {UploaderComponent} from "@components/uploader/uploader.component";
+import {UploaderComponent} from './uploader.component';
 
 /**
  * 组件配置项对象接口
@@ -13,9 +13,9 @@ export interface UploaderOptions {
    */
   parallelHash: any,
   /**
-   * 服务端网址
+   * 服务端接口url
    */
-  url?: string;
+  url: string;
 
   /**
    * 是否发送凭据，默认：`true`
@@ -89,9 +89,9 @@ export interface UploaderOptions {
    * 上传过程中触发，携带总的上传进度，以及当前文件的上传进度
    * @param file File对象
    * @param percentage 当前文件上传进度
-   * @param totaoPercentage 总上传进度
+   * @param totalPercentage 总上传进度
    */
-  onUploadProgress?: (file: FileItem, percentage: number, totaoPercentage: number) => void;
+  onUploadProgress?: (file: FileItem, percentage: number, totalPercentage: number) => void;
 
   /**
    * 当文件上传成功时触发

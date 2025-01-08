@@ -4,13 +4,14 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnDestroy,
   Output,
   ViewChild,
   ViewEncapsulation
 } from '@angular/core';
-import {DialogConfig} from "@components/dialog/dialog.config";
-import {Observable, Observer, Subscription} from "rxjs";
+import {Observable, Observer} from "rxjs";
+import {DialogConfig} from "./dialog.config";
+import {FormsModule} from "@angular/forms";
+import {NgClass, NgForOf, NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault} from "@angular/common";
 
 @Component({
   selector: 'app-dialog',
@@ -19,9 +20,19 @@ import {Observable, Observer, Subscription} from "rxjs";
   host: {'[hidden]': '!shown'},
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    FormsModule,
+    NgClass,
+    NgSwitch,
+    NgIf,
+    NgSwitchCase,
+    NgSwitchDefault,
+    NgForOf
+  ],
   encapsulation: ViewEncapsulation.None
 })
-export class DialogComponent implements OnDestroy {
+export class DialogComponent {
   private _config!: DialogConfig;
   private observer!: Observer<any>;
   private defaultValue: any;
@@ -72,7 +83,7 @@ export class DialogComponent implements OnDestroy {
             }
             break;
           case 'url':
-            config.inputRegex = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+            config.inputRegex = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([\/\w .-]*)*\/?$/;
             if (!config.inputError) {
               config.inputError = '网址格式不正确';
             }
@@ -233,9 +244,5 @@ export class DialogComponent implements OnDestroy {
       this.promptData = this.promptData.filter((c: any) => c !== data);
     }
     this.promptCheck();
-  }
-
-  ngOnDestroy(): void {
-    if (this.observer && this.observer instanceof Subscription) this.observer.unsubscribe();
   }
 }

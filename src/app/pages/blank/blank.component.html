@@ -1,0 +1,9 @@
+<app-searchbar (search)="onSearch($event)" (submit)="onSubmit($event)"></app-searchbar>
+<app-popup #popup>
+  <app-upload-file></app-upload-file>
+</app-popup>
+<button class="weui-btn weui-btn_primary" (click)="toastService.success('success')">Toast</button>
+
+<button class="weui-btn weui-btn_default" (click)="toptipsService.primary('primary')">topTips</button>
+
+<button class="weui-btn weui-btn_warn" (click)="popup.show()">popup</button>

@@ -1,7 +1,7 @@
 import {FileItem} from './file-item.class';
 import {FileType} from './file-type.class';
 import {UploaderOptions} from './uploader.options';
-import {uploadFile} from "@components/uploader/uploader.component";
+import {uploadFile} from "./uploader.component";
 
 export class Uploader {
   private _options!: UploaderOptions;
@@ -139,6 +139,7 @@ export class Uploader {
         if (this.isValidFile(file)) {
           const fileItem = new FileItem(this, file, options!);
           fileItem.index = this._queue.length;
+          fileItem.name = file.name;
           this._queue.push(fileItem);
           if (this._options.onFileQueued) {
             this._options.onFileQueued(fileItem);
@@ -153,6 +154,7 @@ export class Uploader {
         const fileItem = new FileItem(this, file.url, options!);
         fileItem._onSuccess(file, 0, {});//标记为已上传
         this._queue.push(fileItem);
+        fileItem.name = file.name;
         if (this._options.onFileQueued) {
           this._options.onFileQueued(fileItem);
         }
@@ -280,7 +282,7 @@ export class Uploader {
       item._onCancel()
       this._onCompleteItem(item, xhr.response, xhr.status, headers);
     };
-    xhr.open('POST', item.options!.url!, true);
+    xhr.open('POST', item.options.url + '/files', true);
     xhr.responseType = 'json';
     Object.keys(this._options.headers || {}).forEach((key: string) => xhr.setRequestHeader(key, this._options.headers![key]));
 

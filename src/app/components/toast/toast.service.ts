@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ToastComponent} from './toast.component';
-import {ComponentService} from "@components/component.service";
-import {ToastConfig} from "@components/toast/toast.config";
+import {ToastConfig} from "./toast.config";
+import {ComponentService} from "../component.service";
 
 @Injectable({providedIn: 'root'})
 export class ToastService extends ComponentService {

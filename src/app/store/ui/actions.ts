@@ -1,55 +1,33 @@
-import {Action} from '@ngrx/store';
+import {createAction, props} from '@ngrx/store';
+import {ElementRef, ViewContainerRef} from "@angular/core";
+import {NavbarModel} from "./navbar.model";
 
-export const SET_THEME: string = 'SET_THEME';
-export const SET_NAVBAR: string = 'SET_NAVBAR';
-export const SET_NAVBAR_MORE: string = 'SET_NAVBAR_MORE';
-export const SET_ViewContainerRef: string = 'SET_ViewContainerRef';
-export const SET_ElementRef: string = 'SET_ElementRef';
-export const REG_WX: string = 'REG_WX';
+export const themeAction = createAction(
+  '主题',
+  props<{ theme: string }>()
+);
 
-export class SetTheme implements Action {
-  readonly type: string = SET_THEME;
+export const navbarAction = createAction(
+  '导航菜单',
+  props<{ navbar: NavbarModel[] }>()
+);
 
-  constructor(public payload?: any) {
-  }
-}
+export const moreNavbarAction = createAction(
+  '更多导航菜单',
+  props<{ moreNavbar: NavbarModel[] }>()
+);
 
-export class SetNavbar implements Action {
-  readonly type: string = SET_NAVBAR;
+export const dynamicBuildContainerAction = createAction(
+  '动态构建组件容器',
+  props<{ container: ViewContainerRef }>()
+);
+export const dynamicBuildElementAction = createAction(
+  '动态构建组件元素',
+  props<{ element: ElementRef }>()
+);
 
-  constructor(public payload: any) {
-  }
-}
+export const registerWechatAction = createAction(
+  '微信SDK注册',
+  props<{ wx: any }>()
+);
 
-export class SetNavbarMore implements Action {
-  readonly type: string = SET_NAVBAR_MORE;
-
-  constructor(public payload: any) {
-  }
-}
-
-export class SetViewContainerRef implements Action {
-  readonly type: string = SET_ViewContainerRef;
-
-  constructor(public payload: any) {
-  }
-}
-
-export class SetElementRef implements Action {
-  readonly type: string = SET_ElementRef;
-
-  constructor(public payload: any) {
-  }
-}
-
-export class RegWx implements Action {
-  readonly type: string = REG_WX;
-
-  constructor(public payload: any) {
-  }
-}
-
-export type UiAction =
-  | SetTheme
-  | SetNavbar
-  | SetNavbarMore;

@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, Output, ViewEncapsulation} from '@angular/core';
-import {ToptipsConfig} from "@components/toptips/toptips.config";
+import {ToptipsConfig} from "./toptips.config";
 
 
 @Component({
@@ -9,6 +9,7 @@ import {ToptipsConfig} from "@components/toptips/toptips.config";
   host: {'[hidden]': '!shown'},
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
   encapsulation: ViewEncapsulation.None
 })
 export class ToptipsComponent implements OnDestroy {

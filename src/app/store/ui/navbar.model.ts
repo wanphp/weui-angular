@@ -1,4 +1,4 @@
-export interface Navbar {
+export interface NavbarModel {
   active: boolean;
   icon: string;
   title: string;

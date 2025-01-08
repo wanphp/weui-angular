@@ -10,8 +10,8 @@ import {
   Output,
   ViewEncapsulation
 } from '@angular/core';
-import {InfiniteLoaderConfig} from "@components/infiniteloader/infiniteloader.config";
 import {fromEvent, Subscription} from "rxjs";
+import {InfiniteLoaderConfig} from "./infiniteloader.config";
 
 @Component({
   selector: 'app-infiniteloader',
@@ -23,6 +23,7 @@ import {fromEvent, Subscription} from "rxjs";
   },
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
   encapsulation: ViewEncapsulation.None
 })
 export class InfiniteloaderComponent implements OnInit, OnDestroy {

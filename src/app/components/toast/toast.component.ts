@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, Output, ViewEncapsulation} from '@angular/core';
-import {ToastConfig} from "@components/toast/toast.config";
+import {ToastConfig} from "./toast.config";
+import {NgClass, NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-toast',
@@ -8,6 +9,11 @@ import {ToastConfig} from "@components/toast/toast.config";
   host: {'[hidden]': '!shown'},
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    NgClass,
+    NgIf
+  ],
   encapsulation: ViewEncapsulation.None
 })
 export class ToastComponent implements OnDestroy {

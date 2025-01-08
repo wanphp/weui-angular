@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {DialogComponent} from './dialog.component';
 import {DialogConfig} from './dialog.config';
-import {ComponentService} from "@components/component.service";
+import {ComponentService} from "../component.service";
 
 @Injectable({providedIn: 'root'})
 export class DialogService extends ComponentService {

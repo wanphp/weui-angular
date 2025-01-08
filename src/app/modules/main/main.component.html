@@ -12,7 +12,7 @@
       </div>
       <p class="weui-tabbar__label">{{ item.title }}</p>
     </div>
-    <div class="weui-tabbar__item" *ngIf="navbarMore.length>0" (click)="popupMenu.show()">
+    <div class="weui-tabbar__item" *ngIf="navbarMore" (click)="popupMenu.show()">
       <div style="position: relative; display: inline-block;">
         <div class="weui-tabbar__icon"><i class="fa-solid fa-ellipsis"></i></div>
       </div>

@@ -1,19 +1,23 @@
 import {Component} from '@angular/core';
-import {UploaderConfig, uploadFile} from "@components/uploader/uploader.component";
-import {authConfig} from "@/utils/oauth.config";
-import {AppState} from "@/store/state";
 import {Store} from "@ngrx/store";
-import {ToastService} from "@components/toast/toast.service";
 import {Title} from "@angular/platform-browser";
+import {UploaderComponent, UploaderConfig, uploadFile} from "../../components/uploader/uploader.component";
+import {authConfig} from "../../app.config";
+import {AppState} from "../../store";
+import {ToastService} from "../../components/toast/toast.service";
 
 @Component({
   selector: 'app-upload-file',
   templateUrl: './upload-file.component.html',
+  standalone: true,
+  imports: [
+    UploaderComponent
+  ],
   styleUrls: ['./upload-file.component.css']
 })
 export class UploadFileComponent {
   imageConfig: UploaderConfig = {
-    url: `${authConfig.issuer}/api/files`,
+    url: `${authConfig.issuer}/api`,
     auto: true,
     mimes: ['image'],
     limit: 1,
@@ -31,10 +35,10 @@ export class UploadFileComponent {
     private toastService: ToastService
   ) {
     this.title.setTitle('上传文件');
-    this.store.select('auth').subscribe(({currentUser, token}) => {
+    this.store.select('auth').subscribe(({accessToken}) => {
       this.imageConfig = {
         ...this.imageConfig,
-        headers: {'Authorization': token},
+        headers: {'Authorization': accessToken},
       }
       this.pdfConfig = {
         ...this.imageConfig,

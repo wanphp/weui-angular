@@ -1,6 +1,6 @@
 import {Uploader} from './uploader.class';
 import {UploaderOptions} from './uploader.options';
-import {FileType} from "@components/uploader/file-type.class";
+import {FileType} from "./file-type.class";
 
 /**
  * 文件对象
@@ -63,6 +63,10 @@ export class FileItem {
    * 缩略图片，文件文件为类型图片
    */
   thumb: string;
+  /**
+   * 文件名
+   */
+  name: string;
 
   /**
    * HTTP请求对象
@@ -79,7 +83,8 @@ export class FileItem {
   constructor(uploader: Uploader, file: File | string, options?: UploaderOptions) {
     this.uploader = uploader;
     if (options) this.setOptions(options);
-    let fileMimeClass = '';
+    let fileMimeClass;
+    this.name = '';
     if (file instanceof File) {
       fileMimeClass = FileType.getMimeClass(file);
     } else {

@@ -1,5 +1,6 @@
-export interface UserEntity {
+export interface UserModel {
   id?: number;
+  unionid?: string;
   name?: string;
   tel?: string;
   nickname: string;

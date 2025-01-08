@@ -1,7 +1,7 @@
 import {Inject, Injectable} from '@angular/core';
 import {DOCUMENT} from "@angular/common";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
-import {authConfig} from "@/utils/oauth.config";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {authConfig} from '../app.config';
 
 declare var wx: any;
 

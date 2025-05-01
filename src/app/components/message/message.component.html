@@ -1,0 +1,13 @@
+<div class="weui-msg">
+  <div class="weui-msg__icon-area"><i class="weui-icon-{{icon}} weui-icon_msg"></i></div>
+  <div class="weui-msg__text-area">
+    <h2 class="weui-msg__title">{{title}}</h2>
+    <p class="weui-msg__desc">{{ msg }}</p>
+  </div>
+  <div class="weui-msg__opr-area">
+    <p class="weui-btn-area">
+      <button (click)="closePage()" class="weui-btn weui-btn_warn">关闭</button>
+      <button (click)="goBack()" class="weui-btn weui-btn_default">返回</button>
+    </p>
+  </div>
+</div>

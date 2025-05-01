@@ -6,6 +6,7 @@ import {OauthComponent} from './modules/oauth/oauth.component';
 import {NonAuthGuard} from './guards/non-auth.guard';
 import {UploadFileComponent} from "./pages/upload-file/upload-file.component";
 import {BlankComponent} from "./pages/blank/blank.component";
+import {UnauthorizedComponent} from "./pages/unauthorized/unauthorized.component";
 
 export const routes: Routes = [
   {
@@ -31,6 +32,11 @@ export const routes: Routes = [
   {
     path: 'oauth',
     component: OauthComponent,
+    canActivate: [NonAuthGuard]
+  },
+  {
+    path: 'unauthorized',
+    component: UnauthorizedComponent,
     canActivate: [NonAuthGuard]
   },
   {path: '**', redirectTo: ''}

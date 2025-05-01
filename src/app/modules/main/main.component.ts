@@ -44,7 +44,7 @@ export class MainComponent implements OnInit {
     this.ui.subscribe(({theme, navbar, moreNavbar}) => {
       this.navbar = navbar;
       this.navbarMore = moreNavbar;
-      this.renderer.setAttribute(document.querySelector('body'), 'data-weui-theme', theme ? '' : '');
+      this.renderer.setAttribute(document.querySelector('body'), 'data-weui-theme', theme ? theme : '');
     });
   }
 
